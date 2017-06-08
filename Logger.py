@@ -16,7 +16,7 @@ class Logger:
     showTime=True,
     showTotalElapsed=False,
     showElapsedSinceLastLog=True,
-    showTimeLoggerInitMessage=True,
+    showLoggerInitMessage=True,
     addLineBreaks=False,
     referenceId="NA"):
 
@@ -29,8 +29,8 @@ class Logger:
     self.referenceId = referenceId
     self.addLineBreaks = addLineBreaks
 
-    if(showTimeLoggerInitMessage):
-      self.log("TimeLogger initialized")
+    if(showLoggerInitMessage):
+      self.log("Logger initialized")
 
   def getLogString(self, msg="", eventName=""):
     now = datetime.datetime.now()
