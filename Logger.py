@@ -1,14 +1,25 @@
 '''
 Author: Abhijit Annaldas
-Github: http://github.com/avannaldas/PythonHelpers
+Github: http://github.com/avannaldas/PythonLogger
 '''
 import datetime
 
 class Logger:
   '''
-  Standard output printing helper which prefixes useful info with message. Can be used in long running operations as an indication of progress and running time. All options can be configured through constructor and has sensible defaults
+  Standard output printing helper which prefixes useful info with message.
+  Can be used with long running operations to indicate progress/running time.
+  All options can be configured through constructor and has sensible defaults.
   '''
-  def __init__(self, startTime=datetime.datetime.now(), showDate=False, showTime=True, showTotalElapsed=False, showElapsedSinceLastLog=True, showTimeLoggerInitMessage=True, addLineBreaks=False, referenceId="NA"):
+  def __init__(self,
+    startTime=datetime.datetime.now(),
+    showDate=False,
+    showTime=True,
+    showTotalElapsed=False,
+    showElapsedSinceLastLog=True,
+    showTimeLoggerInitMessage=True,
+    addLineBreaks=False,
+    referenceId="NA"):
+
     self.startTime = startTime
     self.showDate = showDate
     self.showTime = showTime
@@ -17,6 +28,7 @@ class Logger:
     self.previousLogTime = startTime
     self.referenceId = referenceId
     self.addLineBreaks = addLineBreaks
+
     if(showTimeLoggerInitMessage):
       self.log("TimeLogger initialized")
 
