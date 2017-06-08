@@ -4,21 +4,27 @@ Github: http://github.com/avannaldas/PythonHelpers
 '''
 import datetime
 
-class TimeLogger:
+class Logger:
   '''
-  Standard output printing helper which prefixes timestamp, elapsed time in seconds with every message. Can be used in long running operations as an indication of progress and time taken
+  Standard output printing helper which prefixes useful info with message. Can be used in long running operations as an indication of progress and running time. All options can be configured through constructor and has sensible defaults
   '''
-  def __init__(self, startTime, showDate=True, showTime=True, showTotalElapsed=True, showElapsedSinceLastLog=True):
+  def __init__(self, startTime=datetime.datetime.now(), showDate=False, showTime=True, showTotalElapsed=False, showElapsedSinceLastLog=True, showTimeLoggerInitMessage=True, addLineBreaks=False, referenceId="NA"):
     self.startTime = startTime
     self.showDate = showDate
     self.showTime = showTime
     self.showTotalElapsed = showTotalElapsed
     self.showElapsedSinceLastLog = showElapsedSinceLastLog
     self.previousLogTime = startTime
+    self.referenceId = referenceId
+    self.addLineBreaks = addLineBreaks
+    if(showTimeLoggerInitMessage):
+      self.log("TimeLogger initialized")
 
-  def log(self, msg = ""):
-    msgStr = ""
+  def getLogString(self, msg="", eventName=""):
     now = datetime.datetime.now()
+    msgStr = ""
+    if(self.referenceId != "NA"):
+      msgStr = "[ReferenceId:" + self.referenceId + "]:"
 
     if(self.showDate == True and self.showTime == False):
       msgStr = msgStr + '[' + now.strftime("%d-%m-%Y") + ']:'
@@ -34,4 +40,15 @@ class TimeLogger:
       msgStr = msgStr + '[Elapsed seconds (diff):' + str(int((now - self.previousLogTime).total_seconds())) + ']:'
       self.previousLogTime = now
 
-    print(msgStr + msg)
+    if(len(eventName)>0):
+      msgStr = msgStr + '[Event:' + eventName + ']:'
+
+    if(self.addLineBreaks):
+      msgStr = msgStr + "\n" + msg
+    else:
+      msgStr = msgStr + msg
+
+    return (msgStr)
+
+  def log(self, msg="", eventName=""):
+    print(self.getLogString(msg, eventName))
