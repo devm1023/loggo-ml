@@ -1,15 +1,17 @@
-'''
+"""
 Author: Abhijit Annaldas
-Github: http://github.com/avannaldas/PythonLogger
-'''
+GitHub: http://github.com/avannaldas/PythonLogger
+"""
+
 import datetime
 
 class Logger:
-  '''
+  """
   Standard output printing helper which prefixes useful info with message.
   Can be used with long running operations to indicate progress/running time.
   All options can be configured through constructor and has sensible defaults.
-  '''
+  """
+
   def __init__(self,
     startTime=datetime.datetime.now(),
     showDate=False,
@@ -28,11 +30,13 @@ class Logger:
     self.previousLogTime = startTime
     self.referenceId = referenceId
     self.addLineBreaks = addLineBreaks
+    self.eventsDict = { }
 
     if(showLoggerInitMessage):
       self.log("Logger initialized")
 
-  def getLogString(self, msg="", eventName=""):
+
+  def getLogString(self, msg="", eventName="", elapsed=None):
     now = datetime.datetime.now()
     msgStr = ""
     if(self.referenceId != "NA"):
@@ -48,19 +52,31 @@ class Logger:
     if(self.showTotalElapsed):
       msgStr = msgStr + '[Total Elapsed Seconds:' + str(int((now - self.startTime).total_seconds())) + ']:'
 
-    if(self.showElapsedSinceLastLog):
-      msgStr = msgStr + '[Elapsed seconds (diff):' + str(int((now - self.previousLogTime).total_seconds())) + ']:'
-      self.previousLogTime = now
+    if(elapsed is None and self.showElapsedSinceLastLog):
+      msgStr = msgStr + '[Elapsed Seconds (diff):' + str(int((now - self.previousLogTime).total_seconds())) + ']:'
+    elif(elapsed is not None):
+      msgStr = msgStr + '[Elapsed Seconds:' + elapsed + ']:'
+    self.previousLogTime = now
 
-    if(len(eventName)>0):
+    if(eventName is not None and len(eventName)>0):
       msgStr = msgStr + '[Event:' + eventName + ']:'
 
     if(self.addLineBreaks):
-      msgStr = msgStr + "\n" + msg
+      msgStr = msgStr + "\n"
+
+    return (msgStr + msg)
+
+  def log(self, msg="", eventName="", elapsed=None):
+    print(self.getLogString(msg, eventName, elapsed))
+
+  def logStartEvent(self, name):
+    self.eventsDict[name] = datetime.datetime.now()
+    self.log("Event started.", name)
+
+  def logEndEvent(self, name):
+    now = datetime.datetime.now()
+    if (name in self.eventsDict):
+      self.log("Event complete.", name, str(int((now - self.eventsDict[name]).total_seconds())))
+      del self.eventsDict[name]
     else:
-      msgStr = msgStr + msg
-
-    return (msgStr)
-
-  def log(self, msg="", eventName=""):
-    print(self.getLogString(msg, eventName))
+      self.log("Event complete, logStartEvent() not called or logEndEvent() already called.", name)
