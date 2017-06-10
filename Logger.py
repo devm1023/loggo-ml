@@ -20,6 +20,7 @@ class Logger:
     showElapsedSinceLastLog=True,
     showLoggerInitMessage=True,
     addLineBreaks=False,
+    returnLogStringInstead=False,
     referenceId="NA"):
 
     self.startTime = startTime
@@ -30,10 +31,11 @@ class Logger:
     self.previousLogTime = startTime
     self.referenceId = referenceId
     self.addLineBreaks = addLineBreaks
+    self.returnLogStringInstead = returnLogStringInstead
     self.eventsDict = { }
 
     if(showLoggerInitMessage):
-      self.log("Logger initialized")
+      print(self.getLogString("Logger initialized"))
 
 
   def getLogString(self, msg="", eventName="", elapsed=None):
@@ -67,16 +69,19 @@ class Logger:
     return (msgStr + msg)
 
   def log(self, msg="", eventName="", elapsed=None):
+    if(self.returnLogStringInstead):
+      return self.getLogString(msg, eventName, elapsed)
     print(self.getLogString(msg, eventName, elapsed))
 
   def logStartEvent(self, name):
     self.eventsDict[name] = datetime.datetime.now()
-    self.log("Event started.", name)
+    return self.log("Event started.", name)
 
   def logEndEvent(self, name):
     now = datetime.datetime.now()
     if (name in self.eventsDict):
-      self.log("Event complete.", name, str(int((now - self.eventsDict[name]).total_seconds())))
+      startEvent = self.eventsDict[name]
       del self.eventsDict[name]
+      return self.log("Event complete.", name, str(int((now - startEvent).total_seconds())))
     else:
-      self.log("Event complete, logStartEvent() not called or logEndEvent() already called.", name)
+      return self.log("Event complete, logStartEvent() not called or logEndEvent() already called.", name)
